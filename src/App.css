@@ -134,3 +134,127 @@
   cursor: pointer;
   font-weight: 500;
 }
+
+/* ===== DETALLE REPORTE FUNCIONARIO ===== */
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.detalle-card {
+  background-color: #f4faf4;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.detalle-card h3 {
+  margin-top: 0;
+}
+
+.detalle-doble {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.placeholder {
+  background-color: #e9f1e9;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 6px;
+}
+
+.mapa {
+  height: 220px;
+}
+
+.historial-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historial-table th,
+.historial-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.85rem;
+}
+
+.estado-select {
+  margin-top: 0.5rem;
+}
+
+/* ===== SOLICITUDES FUNCIONARIO ===== */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.kpi-card {
+  background: #f4faf4;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.filters select,
+.filters button {
+  padding: 0.4rem;
+}
+
+.solicitudes-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1.5rem;
+}
+
+.side-card {
+  background: #f4faf4;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.side-placeholder {
+  background: #e9f1e9;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 6px;
+}
+
+.table button {
+  padding: 0.25rem 0.6rem;
+}
+
+/* ===== ZONAS CRÍTICAS ===== */
+
+.criticidad-alta {
+  color: #b00020;
+  font-weight: bold;
+}
+
+.criticidad-media {
+  color: #d17b00;
+  font-weight: bold;
+}
+
+.criticidad-baja {
+  color: #2e7d32;
+  font-weight: bold;
+}

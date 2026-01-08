@@ -7,11 +7,15 @@ function DetalleReporteCiudadano() {
         JSON.parse(localStorage.getItem("reportes")) || [];
 
     const reporte = reportes.find(
-        (r, index) => index + 1 === Number(id)
+        (r) => r.id === Number(id)
     );
 
     if (!reporte) {
-        return <p style={{ padding: "2rem" }}>Reporte no encontrado</p>;
+        return (
+            <p style={{ padding: "2rem" }}>
+                Reporte no encontrado
+            </p>
+        );
     }
 
     return (
@@ -27,6 +31,14 @@ function DetalleReporteCiudadano() {
 
                 {reporte.imagen && (
                     <p><strong>Imagen:</strong> {reporte.imagen}</p>
+                )}
+
+                {/* 👇 OBSERVACIÓN DEL FUNCIONARIO */}
+                {reporte.observacion && (
+                    <div className="detalle-card" style={{ marginTop: "1rem" }}>
+                        <h3>Observación del municipio</h3>
+                        <p>{reporte.observacion}</p>
+                    </div>
                 )}
             </div>
         </div>

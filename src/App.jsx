@@ -10,6 +10,8 @@ import Solicitudes from "./pages/Solicitudes";
 import MisReportes from "./pages/MisReportes";
 import "./App.css";
 import DetalleReporteCiudadano from "./pages/DetalleReporteCiudadano";
+import DetalleReporteFuncionario from "./pages/DetalleReporteFuncionario";
+import ZonasCriticas from "./pages/ZonasCriticas";
 
 
 
@@ -26,6 +28,12 @@ function App() {
         <Route path="/solicitudes" element={<Solicitudes />} />
         <Route path="/mis-reportes" element={<MisReportes />} />
         <Route path="/detalle-reporte/:id" element={<DetalleReporteCiudadano />} />
+        <Route path="/zonas-criticas" element={<ZonasCriticas />} />
+        <Route
+          path="/solicitudes/:id"
+          element={<DetalleReporteFuncionario />}
+        />
+
         <Route
           path="/dashboard"
           element={

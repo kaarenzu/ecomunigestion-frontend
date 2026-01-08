@@ -40,6 +40,7 @@ function Navbar() {
                 {user && role === "FUNCIONARIO" && (
                     <>
                         <Link to="/solicitudes">Solicitudes</Link>
+                        <Link to="zonas-criticas">Zonas Críticas</Link>
                         <Link to="/dashboard">Dashboard</Link>
                         <button onClick={handleLogout}>Cerrar sesión</button>
                     </>

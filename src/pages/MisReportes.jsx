@@ -66,7 +66,7 @@ function MisReportes() {
                                 <button
                                     className="btn-detalle"
                                     onClick={() =>
-                                        navigate(`/detalle-reporte/${index + 1}`)
+                                        navigate(`/detalle-reporte/${reporte.id}`)
                                     }
                                 >
                                     Ver detalle
