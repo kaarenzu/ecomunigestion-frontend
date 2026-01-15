@@ -1,7 +1,10 @@
-export const login = (data) => {
-    console.log("Login API (simulada)", data);
-};
+import axios from "axios";
 
-export const crearReporte = (data) => {
-    console.log("Crear reporte API (simulada)", data);
-};
+const api = axios.create({
+    baseURL: "http://localhost:3001/api", // cambia si está desplegado
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+
+export default api;

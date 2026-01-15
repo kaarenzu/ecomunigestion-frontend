@@ -23,7 +23,7 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-left">
-                <Link to="/">EcoMuniSmart</Link>
+                <Link to="/">EcoMuniGestionSmart</Link>
             </div>
 
             <div className="navbar-right">

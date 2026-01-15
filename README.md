@@ -59,19 +59,29 @@ para las siguientes etapas del proyecto.
 
 ## 📁 Estructura del proyecto
 
-Resumen de la estructura principal:
+Resumen de la estructura principal (actualizada):
 
 ```
 / (root)
 ├─ public/
 ├─ src/
-│  ├─ assets/        # imágenes, íconos, etc.
-│  ├─ components/    # componentes reutilizables
-│  ├─ pages/         # páginas (rutas)
+│  ├─ assets/            # imágenes, íconos, etc.
+│  ├─ components/        # Navbar.jsx, PrivateRoute.jsx, RoleRoute.jsx
+│  ├─ context/           # AuthContext.jsx
+│  ├─ firebase/          # firebase.js (configuración)
+│  ├─ pages/             # vistas / rutas
+│  │   ├─ Home.jsx
+│  │   ├─ Dashboard.jsx
 │  │   ├─ Login.jsx
+│  │   ├─ Register.jsx
 │  │   ├─ CrearReporte.jsx
-│  │   └─ CambiarEstado.jsx
-│  ├─ services/      # llamadas a APIs / lógica de negocio
+│  │   ├─ MisReportes.jsx
+│  │   ├─ DetalleReporteCiudadano.jsx
+│  │   ├─ DetalleReporteFuncionario.jsx
+│  │   ├─ CambiarEstado.jsx
+│  │   ├─ Solicitudes.jsx
+│  │   └─ ZonasCriticas.jsx
+│  ├─ services/          # api.js (cliente HTTP)
 │  ├─ App.jsx
 │  ├─ main.jsx
 │  └─ index.css / App.css
@@ -83,11 +93,16 @@ Resumen de la estructura principal:
 
 ### 📝 Archivos y carpetas clave
 
-- `src/pages/` — Páginas principales de la app (Login, CrearReporte, CambiarEstado).
-- `src/components/` — Componentes UI reutilizables.
-- `src/services/` — Cliente HTTP y funciones para consumir la API.
-- `public/` — Archivos estáticos servidos tal cual.
-- `vite.config.js` — Configuración de Vite.
+- `src/pages/` — Páginas principales (Home, Dashboard, Login, Register, CrearReporte, MisReportes, DetalleReporte*, CambiarEstado, Solicitudes, ZonasCriticas).
+- `src/components/` — Componentes reutilizables (p. ej. `Navbar.jsx`, `PrivateRoute.jsx`, `RoleRoute.jsx`).
+- `src/context/` — Contextos de React (`AuthContext.jsx`).
+- `src/firebase/` — Configuración de Firebase (`firebase.js`).
+- `src/services/` — Lógica para llamadas a la API (`api.js`).
+- `src/assets/` — Recursos estáticos (imágenes, íconos, etc.).
+
+---
+
+
 
 ---
 
