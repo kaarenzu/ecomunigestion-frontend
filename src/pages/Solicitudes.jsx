@@ -1,26 +1,45 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-const calcularPrioridad = (estado) => {
-    if (estado === "PENDIENTE") return "ALTA";
-    if (estado === "EN_PROCESO") return "MEDIA";
-    return "BAJA";
-};
 
 function Solicitudes() {
     const [reportes, setReportes] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
     const [filtroEstado, setFiltroEstado] = useState("");
     const [filtroTipo, setFiltroTipo] = useState("");
     const [filtroPrioridad, setFiltroPrioridad] = useState("");
 
     useEffect(() => {
-        const data = JSON.parse(localStorage.getItem("reportes")) || [];
-        setReportes(data);
+        const fetchReportes = async () => {
+            try {
+                const response = await api.get("/reportes");
+                setReportes(response.data);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReportes();
     }, []);
 
-    const activosPorSector = {};
+    if (loading) {
+        return (
+            <div className="page">
+                <h1>Gestión de Solicitudes</h1>
+                <p>Cargando reportes...</p>
+            </div>
+        );
+    }
 
+    /* ======================
+       KPIs y métricas
+    ====================== */
+    const activosPorSector = {};
     reportes.forEach((r) => {
         if (r.estado !== "RESUELTO") {
             activosPorSector[r.sector] =
@@ -28,42 +47,40 @@ function Solicitudes() {
         }
     });
 
-    const estados = [...new Set(reportes.map(r => r.estado))];
-    const tipos = [...new Set(reportes.map(r => r.tipo))];
+    const estados = [...new Set(reportes.map((r) => r.estado))];
+    const tipos = [...new Set(reportes.map((r) => r.tipo_problema))];
     const prioridades = ["ALTA", "MEDIA", "BAJA"];
 
 
     const reportesFiltrados = reportes.filter((r) => {
-        const prioridad = calcularPrioridad(r.estado);
+
 
         return (
             (filtroEstado === "" || r.estado === filtroEstado) &&
-            (filtroTipo === "" || r.tipo === filtroTipo) &&
-            (filtroPrioridad === "" || prioridad === filtroPrioridad)
+            (filtroTipo === "" || r.tipo_problema === filtroTipo) &&
+            (filtroPrioridad === "" || r.prioridad === filtroPrioridad)
         );
     });
-
 
     const sectorCritico = Object.entries(activosPorSector)
         .sort((a, b) => b[1] - a[1])[0]?.[0];
 
     const urgentes = reportes.filter(
-        (r) => r.estado === "PENDIENTE"
+        (r) =>
+            r.estado.toUpperCase() === "PENDIENTE" &&
+            r.sector === sectorCritico
     ).length;
 
-    // Datos para gráfico lateral
     const reportesActivos = reportes.filter(
         (r) => r.estado !== "RESUELTO"
     );
 
     const porSector = {};
-
     reportesActivos.forEach((r) => {
         porSector[r.sector] = (porSector[r.sector] || 0) + 1;
     });
 
     const datosGrafico = Object.entries(porSector);
-
 
     return (
         <div className="page">
@@ -74,8 +91,6 @@ function Solicitudes() {
             <div className="kpi-grid">
                 <div className="kpi-card">
                     <strong>Urgentes:</strong> {urgentes}
-                    <br />
-                    <small>Emergencias</small>
                 </div>
 
                 <div className="kpi-card">
@@ -91,24 +106,16 @@ function Solicitudes() {
                 </div>
             </div>
 
-            {/* Filtros (solo UI) */}
+            {/* Filtros */}
             <div className="filters">
-                <select
-                    value={filtroTipo}
-                    onChange={(e) => setFiltroTipo(e.target.value)}
-                >
+                <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
                     <option value="">Tipo de problema</option>
                     {tipos.map((tipo) => (
-                        <option key={tipo} value={tipo}>
-                            {tipo}
-                        </option>
+                        <option key={tipo} value={tipo}>{tipo}</option>
                     ))}
                 </select>
 
-                <select
-                    value={filtroEstado}
-                    onChange={(e) => setFiltroEstado(e.target.value)}
-                >
+                <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
                     <option value="">Estado</option>
                     {estados.map((estado) => (
                         <option key={estado} value={estado}>
@@ -116,33 +123,27 @@ function Solicitudes() {
                         </option>
                     ))}
                 </select>
+
                 <select
                     value={filtroPrioridad}
                     onChange={(e) => setFiltroPrioridad(e.target.value)}
                 >
                     <option value="">Prioridad</option>
-                    {prioridades.map((prioridad) => (
-                        <option key={prioridad} value={prioridad}>
-                            {prioridad}
-
-                        </option>
+                    {prioridades.map((p) => (
+                        <option key={p} value={p}>{p}</option>
                     ))}
                 </select>
 
-                <button
-                    onClick={() => {
-                        setFiltroEstado("");
-                        setFiltroTipo("");
-                        setFiltroPrioridad("");
-                    }}
-                >
+                <button onClick={() => {
+                    setFiltroEstado("");
+                    setFiltroTipo("");
+                    setFiltroPrioridad("");
+                }}>
                     Limpiar
                 </button>
-
             </div>
 
-
-            {/* Tabla + lateral */}
+            {/* Tabla */}
             <div className="solicitudes-layout">
                 <table className="table">
                     <thead>
@@ -157,17 +158,16 @@ function Solicitudes() {
                     </thead>
                     <tbody>
                         {reportesFiltrados.map((reporte, index) => (
-                            <tr key={reporte.id}>
+                            <tr key={reporte.id_reporte}>
                                 <td>{index + 1}</td>
-                                <td>{reporte.tipo}</td>
-                                <td>{reporte.fecha}</td>
+                                <td>{reporte.tipo_problema}</td>
+                                <td>{new Date(reporte.fecha_creacion).toLocaleDateString("es-CL")}</td>
                                 <td>{reporte.sector}</td>
-                                <td>{calcularPrioridad(reporte.estado)}</td>
+                                <td>{reporte.prioridad}</td>
                                 <td>
                                     <button
                                         onClick={() =>
-                                            navigate(`/solicitudes/${reporte.id}`)
-
+                                            navigate(`/solicitudes/${reporte.id_reporte}`)
                                         }
                                     >
                                         Ver
@@ -178,24 +178,15 @@ function Solicitudes() {
                     </tbody>
                 </table>
 
+                {/* Lateral */}
                 <div className="side-card">
                     <h3>Reportes por sector</h3>
-                    <small>(últimos 7 días)</small>
 
-                    <div className="side-placeholder" style={{ flexDirection: "column" }}>
-                        {datosGrafico.length === 0 && (
-                            <p>No hay reportes activos</p>
-                        )}
+                    <div className="side-placeholder">
+                        {datosGrafico.length === 0 && <p>No hay reportes activos</p>}
 
                         {datosGrafico.map(([sector, cantidad]) => (
-                            <div
-                                key={sector}
-                                style={{
-                                    width: "100%",
-                                    marginBottom: "0.5rem",
-                                    textAlign: "left",
-                                }}
-                            >
+                            <div key={sector}>
                                 <small>{sector}</small>
                                 <div
                                     style={{
@@ -208,7 +199,6 @@ function Solicitudes() {
                             </div>
                         ))}
                     </div>
-
                 </div>
             </div>
         </div>

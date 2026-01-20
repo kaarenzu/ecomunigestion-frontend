@@ -1,46 +1,81 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 function DetalleReporteCiudadano() {
     const { id } = useParams();
+    const navigate = useNavigate();
 
-    const reportes =
-        JSON.parse(localStorage.getItem("reportes")) || [];
+    const [reporte, setReporte] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    const reporte = reportes.find(
-        (r) => r.id === Number(id)
-    );
+    useEffect(() => {
+        const fetchDetalle = async () => {
+            try {
+                const response = await api.get(`/reportes/${id}`);
+                setReporte(response.data);
+            } catch (err) {
+                console.error(err);
+                setError("No fue posible cargar el detalle del reporte");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    if (!reporte) {
+        fetchDetalle();
+    }, [id]);
+
+    if (loading) {
         return (
-            <p style={{ padding: "2rem" }}>
-                Reporte no encontrado
-            </p>
+            <div className="page">
+                <h1>Detalle del Reporte</h1>
+                <p>Cargando información...</p>
+            </div>
         );
     }
+
+    if (error) {
+        return (
+            <div className="page">
+                <h1>Detalle del Reporte</h1>
+                <p style={{ color: "red" }}>{error}</p>
+            </div>
+        );
+    }
+
+    if (!reporte) return null;
 
     return (
         <div className="page">
             <h1>Detalle del Reporte</h1>
 
-            <div className="card">
-                <p><strong>Título:</strong> {reporte.titulo}</p>
-                <p><strong>Tipo:</strong> {reporte.tipo}</p>
-                <p><strong>Sector:</strong> {reporte.sector}</p>
-                <p><strong>Estado:</strong> {reporte.estado}</p>
-                <p><strong>Fecha:</strong> {reporte.fecha}</p>
+            <p><strong>Título:</strong> {reporte.titulo}</p>
+            <p><strong>Descripción:</strong> {reporte.descripcion}</p>
+            <p><strong>Sector:</strong> {reporte.sector}</p>
+            <p><strong>Tipo de problema:</strong> {reporte.tipo_problema}</p>
+            <p><strong>Estado:</strong> {reporte.estado}</p>
+            <p>
+                <strong>Fecha:</strong>{" "}
+                {new Date(reporte.fecha_creacion).toLocaleDateString("es-CL")}
+            </p>
 
-                {reporte.imagen && (
-                    <p><strong>Imagen:</strong> {reporte.imagen}</p>
-                )}
+            <h3>Observaciones</h3>
 
-                {/* 👇 OBSERVACIÓN DEL FUNCIONARIO */}
-                {reporte.observacion && (
-                    <div className="detalle-card" style={{ marginTop: "1rem" }}>
-                        <h3>Observación del municipio</h3>
-                        <p>{reporte.observacion}</p>
-                    </div>
-                )}
-            </div>
+            {reporte.observaciones && reporte.observaciones.length > 0 ? (
+                <ul>
+                    {reporte.observaciones.map((obs, index) => (
+                        <li key={index}>
+                            {obs.observacion} (
+                            {new Date(obs.fecha_observacion).toLocaleDateString("es-CL")})
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No existen observaciones para este reporte.</p>
+            )}
+
+            <button onClick={() => navigate(-1)}>Volver</button>
         </div>
     );
 }

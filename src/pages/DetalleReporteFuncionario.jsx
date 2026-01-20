@@ -1,45 +1,106 @@
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+
+
+const estadoToId = {
+    PENDIENTE: 1,
+    REVISION: 2,
+    EN_PROCESO: 3,
+    RESUELTO: 4
+};
+
 
 function DetalleReporteFuncionario() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const emailFuncionario = user?.email;
 
-    const reportes =
-        JSON.parse(localStorage.getItem("reportes")) || [];
 
-    const reporte = reportes.find((r) => r.id === Number(id));
+    const [reporte, setReporte] = useState(null);
+    const [estado, setEstado] = useState("");
+    const [observacion, setObservacion] = useState("");
+    const [historial, setHistorial] = useState([]);
 
-    const [estado, setEstado] = useState(reporte?.estado || "");
-    const [observacion, setObservacion] = useState(
-        reporte?.observacion || ""
-    );
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    if (!reporte) {
-        return <p style={{ padding: "2rem" }}>Reporte no encontrado</p>;
-    }
+    useEffect(() => {
 
-    const guardarCambios = () => {
-        const actualizados = reportes.map((r) => {
-            if (r.id === reporte.id) {
-                return {
-                    ...r,
-                    estado: estado,
-                    observacion: observacion,
+        const fetchDetalle = async () => {
+            try {
+                const response = await api.get(`/reportes/${id}`);
+                setReporte(response.data);
+                const normalizarEstado = (estadoTexto) => {
+                    if (!estadoTexto) return "";
+
+                    return estadoTexto
+                        .toUpperCase()
+                        .replace(" ", "_");
                 };
+
+                setEstado(normalizarEstado(response.data.estado));
+
+
+            } catch (err) {
+                console.error(err);
+                setError("No fue posible cargar el detalle del reporte");
+            } finally {
+                setLoading(false);
             }
-            return r;
-        });
+        };
 
-        localStorage.setItem(
-            "reportes",
-            JSON.stringify(actualizados)
-        );
+        fetchDetalle();
+    }, [id]);
 
-        navigate("/solicitudes");
+    const guardarCambios = async () => {
+        try {
+            // PT-07: cambio de estado
+            console.log("Guardando estado:", estado);
+            console.log("Funcionario:", emailFuncionario);
+            console.log("id reporte:", id);
+            await api.put(`/reportes/${id}/estado`, {
+                id_estado: estadoToId[estado],
+                email_funcionario: emailFuncionario,
+            });
+
+
+            // PT-08: agregar observación
+            if (observacion.trim() !== "") {
+                await api.post(`/reportes/${id}/observaciones`, {
+                    observacion: observacion,
+                    email_funcionario: emailFuncionario,
+                });
+            }
+
+            navigate("/solicitudes");
+        } catch (err) {
+            console.error(err);
+            alert("Error al guardar los cambios");
+        }
     };
 
+    if (loading) {
+        return (
+            <div className="page">
+                <h1>Detalle del Reporte</h1>
+                <p>Cargando información...</p>
+            </div>
+        );
+    }
 
+    if (error) {
+        return (
+            <div className="page">
+                <h1>Detalle del Reporte</h1>
+                <p style={{ color: "red" }}>{error}</p>
+            </div>
+        );
+    }
+
+    if (!reporte) return null;
 
     return (
         <div className="page">
@@ -53,15 +114,18 @@ function DetalleReporteFuncionario() {
                         <div className="detalle-card">
                             <h3>Información del reporte</h3>
                             <p><strong>Ciudadano:</strong> {reporte.ciudadanoEmail}</p>
-                            <p><strong>Fecha:</strong> {reporte.fecha}</p>
-                            <p><strong>Tipo:</strong> {reporte.tipo}</p>
+                            <p>
+                                <strong>Fecha:</strong>{" "}
+                                {new Date(reporte.fecha_creacion).toLocaleDateString("es-CL")}
+                            </p>
+                            <p><strong>Tipo:</strong> {reporte.tipo_problema}</p>
                             <p><strong>Sector:</strong> {reporte.sector}</p>
                         </div>
 
                         <div className="detalle-card">
                             <h3>Prioridad automática</h3>
-                            <p><strong>Alta</strong></p>
-                            <p>Razón: zona con múltiples reportes</p>
+                            <p><strong>{reporte.prioridad}</strong></p>
+                            <p>Calculada automáticamente por el sistema</p>
                         </div>
                     </div>
 
@@ -91,9 +155,11 @@ function DetalleReporteFuncionario() {
                             onChange={(e) => setEstado(e.target.value)}
                         >
                             <option value="PENDIENTE">Recibido</option>
+                            <option value="EN_REVISION">En revisión</option>
                             <option value="EN_PROCESO">En proceso</option>
                             <option value="RESUELTO">Resuelto</option>
                         </select>
+
 
                         <label style={{ marginTop: "1rem", display: "block" }}>
                             Observación
@@ -112,31 +178,10 @@ function DetalleReporteFuncionario() {
                         </button>
                     </div>
 
-                    <div className="detalle-card" style={{ marginTop: "1rem" }}>
-                        <h3>Historial del reporte</h3>
-
-                        <table className="historial-table">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Estado</th>
-                                    <th>Cambiado por</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{reporte.fecha}</td>
-                                    <td>{reporte.estado}</td>
-                                    <td>Funcionario</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
     );
-
 }
 
 export default DetalleReporteFuncionario;

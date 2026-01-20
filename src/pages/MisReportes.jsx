@@ -1,30 +1,57 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 function MisReportes() {
     const { user } = useAuth();
     const [misReportes, setMisReportes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
-
 
     useEffect(() => {
         // 🛡️ Defensa: si no hay usuario, no hacer nada
-        if (!user) {
+        if (!user?.email) {
             setMisReportes([]);
+            setLoading(false);
             return;
         }
 
+        const fetchMisReportes = async () => {
+            try {
+                const response = await api.get(
+                    `/reportes/usuario/${user.email}`
+                );
+                setMisReportes(response.data);
+            } catch (err) {
+                console.error(err);
+                setError("No fue posible cargar tus reportes");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        const reportes =
-            JSON.parse(localStorage.getItem("reportes")) || [];
-
-        const filtrados = reportes.filter(
-            (r) => r.ciudadanoEmail === user.email
-        );
-
-        setMisReportes(filtrados);
+        fetchMisReportes();
     }, [user]);
+
+    if (loading) {
+        return (
+            <div className="page">
+                <h1>Mis Reportes</h1>
+                <p>Cargando reportes...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="page">
+                <h1>Mis Reportes</h1>
+                <p style={{ color: "red" }}>{error}</p>
+            </div>
+        );
+    }
 
     if (misReportes.length === 0) {
         return (
@@ -53,20 +80,20 @@ function MisReportes() {
 
                 <tbody>
                     {misReportes.map((reporte, index) => (
-                        <tr key={reporte.id}>
+                        <tr key={reporte.id_reporte}>
                             <td>{index + 1}</td>
-                            <td>{reporte.fecha}</td>
-                            <td>{reporte.tipo}</td>
+                            <td> {new Date(reporte.fecha_creacion).toLocaleDateString("es-CL")}</td>
+                            <td>{reporte.tipo_problema}</td>
                             <td>
                                 <span className={`status ${reporte.estado}`}>
-                                    {reporte.estado.replace("_", " ")}
+                                    {reporte.estado}
                                 </span>
                             </td>
                             <td>
                                 <button
                                     className="btn-detalle"
                                     onClick={() =>
-                                        navigate(`/detalle-reporte/${reporte.id}`)
+                                        navigate(`/detalle-reporte/${reporte.id_reporte}`)
                                     }
                                 >
                                     Ver detalle

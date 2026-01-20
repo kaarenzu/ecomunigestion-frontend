@@ -3,6 +3,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import api from "../services/api";
+
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -23,11 +25,12 @@ function Register() {
                 email,
                 password
             );
+            // Registrar el usuario en la API con su rol
+            await api.post("/usuarios/registro", {
+                email,
+                rol: role
+            });
 
-            const uid = userCredential.user.uid;
-
-            // 👇 guardar rol asociado al usuario
-            localStorage.setItem(`role_${uid}`, role);
 
             // 🔒 cerrar sesión para forzar login explícito
             await signOut(auth);

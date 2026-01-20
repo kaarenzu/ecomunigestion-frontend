@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebase";
+import api from "../services/api";
 
 const AuthContext = createContext();
 
@@ -10,23 +11,26 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
 
-            // Aquí puedes agregar lógica para obtener el rol del usuario desde tu base de datos
-            if (currentUser) {
-                const uid = currentUser.uid;
-                const storedRole = localStorage.getItem(`role_${uid}`);
-                setRole(storedRole);
+            if (currentUser?.email) {
+                try {
+                    const res = await api.get(
+                        `/usuarios/rol/${currentUser.email}`
+                    );
+                    setRole(res.data.rol);
+                } catch {
+                    setRole("CIUDADANO"); // fallback seguro
+                }
             } else {
                 setRole(null);
             }
 
             setLoading(false);
-
         });
 
-        return () => unsubscribe();
+        return unsubscribe;
     }, []);
 
     return (

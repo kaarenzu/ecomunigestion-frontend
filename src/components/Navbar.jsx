@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
@@ -23,25 +23,38 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-left">
-                <Link to="/">EcoMuniGestionSmart</Link>
+                <NavLink className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                } to="/">EcoMuniGestionSmart</NavLink>
             </div>
 
             <div className="navbar-right">
-                {!user && <Link to="/login">Iniciar sesión</Link>}
-
+                {!user && <NavLink className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                } to="/login">Iniciar sesión</NavLink>}
                 {user && role === "CIUDADANO" && (
                     <>
-                        <Link to="/crear-reporte">Reportar</Link>
-                        <Link to="/mis-reportes">Mis Reportes</Link>
+                        <NavLink className={({ isActive }) =>
+                            isActive ? "nav-link active" : "nav-link"
+                        } to="/crear-reporte">Reportar</NavLink>
+                        <NavLink className={({ isActive }) =>
+                            isActive ? "nav-link active" : "nav-link"
+                        } to="/mis-reportes">Mis Reportes</NavLink>
                         <button onClick={handleLogout}>Cerrar sesión</button>
                     </>
                 )}
 
                 {user && role === "FUNCIONARIO" && (
                     <>
-                        <Link to="/solicitudes">Solicitudes</Link>
-                        <Link to="zonas-criticas">Zonas Críticas</Link>
-                        <Link to="/dashboard">Dashboard</Link>
+                        <NavLink className={({ isActive }) =>
+                            isActive ? "nav-link active" : "nav-link"
+                        } to="/solicitudes">Solicitudes</NavLink>
+                        <NavLink className={({ isActive }) =>
+                            isActive ? "nav-link active" : "nav-link"
+                        } to="/zonas-criticas">Zonas Críticas</NavLink>
+                        <NavLink className={({ isActive }) =>
+                            isActive ? "nav-link active" : "nav-link"
+                        } to="/dashboard">Dashboard</NavLink>
                         <button onClick={handleLogout}>Cerrar sesión</button>
                     </>
                 )}
