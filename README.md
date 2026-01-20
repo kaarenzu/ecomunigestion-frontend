@@ -37,7 +37,7 @@ Acceso:      Crear reportes, consultar estado, ver zonas críticas
 
 ## 🚧 Estado del Proyecto
 
-El frontend se encuentra en **fase de desarrollo activo**.
+El sistema corresponde a un prototipo funcional académico, desarrollado para validar los flujos principales, la arquitectura y la solución planteada al problema de gestión municipal.
 
 ### Hitos Completados
 ✅ Estructura base de la aplicación
