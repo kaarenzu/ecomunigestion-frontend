@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3001/api", // cambia si está desplegado
+    baseURL: import.meta.env.VITE_API_URL, // cambia si está desplegado
     headers: {
         "Content-Type": "application/json",
     },

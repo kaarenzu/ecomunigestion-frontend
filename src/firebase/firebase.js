@@ -6,12 +6,12 @@ import { getAuth, setPersistence, browserSessionPersistence } from "firebase/aut
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDX_EPyrjYXqR3qj0g9lbVCGyFK8Q3s2yQ",
-    authDomain: "ecomunigestionsmart.firebaseapp.com",
-    projectId: "ecomunigestionsmart",
-    storageBucket: "ecomunigestionsmart.firebasestorage.app",
-    messagingSenderId: "1035180633998",
-    appId: "1:1035180633998:web:1a12ac273e4931eff03edf"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
