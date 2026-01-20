@@ -52,9 +52,6 @@ function Navbar() {
                         <NavLink className={({ isActive }) =>
                             isActive ? "nav-link active" : "nav-link"
                         } to="/zonas-criticas">Zonas Críticas</NavLink>
-                        <NavLink className={({ isActive }) =>
-                            isActive ? "nav-link active" : "nav-link"
-                        } to="/dashboard">Dashboard</NavLink>
                         <button onClick={handleLogout}>Cerrar sesión</button>
                     </>
                 )}

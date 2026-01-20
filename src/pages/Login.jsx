@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -17,7 +17,7 @@ function Login() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigate("/dashboard"); // 👈 AQUÍ sí
+            navigate("/dashboard");
         } catch {
             setError("Credenciales inválidas");
         }
@@ -25,9 +25,10 @@ function Login() {
 
     return (
         <div className="page">
-            <h2>Iniciar sesión</h2>
+
 
             <form className="form" onSubmit={handleSubmit}>
+                <h2>Iniciar sesión</h2>
                 <input
                     type="email"
                     value={email}
@@ -43,13 +44,14 @@ function Login() {
                     required
                 />
                 <button type="submit">Ingresar</button>
+                {error && <p>{error}</p>}
+
+                <p>
+                    ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+                </p>
             </form>
 
-            {error && <p>{error}</p>}
 
-            <p>
-                ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-            </p>
         </div>
     );
 }

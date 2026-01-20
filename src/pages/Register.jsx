@@ -19,12 +19,7 @@ function Register() {
         setError("");
 
         try {
-            // Aquí podrías guardar el rol en tu base de datos si es necesario
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
+
             // Registrar el usuario en la API con su rol
             await api.post("/usuarios/registro", {
                 email,
@@ -38,15 +33,17 @@ function Register() {
             navigate("/login");
 
         } catch {
+            console.warn("Backend no disponible en entorno productivo académico");
             setError("Error al registrar usuario");
         }
     };
 
     return (
         <div className="page">
-            <h2>Registro</h2>
 
             <form className="form" onSubmit={handleSubmit}>
+                <h2>Registro</h2>
+
                 <select value={role} onChange={(e) => setRole(e.target.value)}>
                     <option value="CIUDADANO">Ciudadano</option>
                     <option value="FUNCIONARIO">Funcionario</option>

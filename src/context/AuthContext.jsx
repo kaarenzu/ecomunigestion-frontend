@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
                     );
                     setRole(res.data.rol);
                 } catch {
+                    console.warn("Backend no disponible en entorno productivo académico");
                     setRole("CIUDADANO"); // fallback seguro
                 }
             } else {
